@@ -67,22 +67,19 @@ def getSheetPosition(cells, sheet_name):
             return i
     return None
 
-with open('49_features_downsampled_dataset.csv') as csvfile:
-    datareader = csv.reader(csvfile, delimiter = ',', quotechar = '\'')
-    sheets = []
-    last_sheet = ""
-    sheet_position = -1
-    for row in datareader:
-        cell = Cell(row)
-        #if last_sheet is cell.sheet:
-        sheet_position = getSheetPosition(sheets, cell.sheet)
-        if (sheet_position is None):
-            sheets.append([cell])
-            #sheet_position = sheet_position + 1
-        else:
-            sheets[sheet_position].insert(get_cell_position(sheets[sheet_position], cell), cell)
-
-
+def parseCsvFile():
+    with open('49_features_downsampled_dataset.csv') as csvfile:
+        datareader = csv.reader(csvfile, delimiter = ',', quotechar = '\'')
+        sheets = []
+        last_sheet = ""
+        sheet_position = -1
+        for row in datareader:
+            cell = Cell(row)
+            sheet_position = getSheetPosition(sheets, cell.sheet)
+            if (sheet_position is None):
+                sheets.append([cell])
+            else:
+                sheets[sheet_position].insert(get_cell_position(sheets[sheet_position], cell), cell)
     #Testing:
     
     print(len(sheets))
@@ -102,4 +99,5 @@ with open('49_features_downsampled_dataset.csv') as csvfile:
     print(len(outputs))
     #for cell in cells[0]:
         #print(cell.sheet)
+    return(sheets)
 
