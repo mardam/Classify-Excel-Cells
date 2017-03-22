@@ -1,5 +1,4 @@
 from load_data import *
-import Strings
 
 def getHighestColumnNumber(rows):
     maxIndex = -1
@@ -25,7 +24,7 @@ def createEmptyCell(emptyCellData, rowNumber, columnNumber, label, file, sheetNa
     emptyCellData[0] = file
     emptyCellData[2] = sheetName
     emptyCellData[5] = "(" + str(columnNumber) + "," + str(rowNumber) + ")"
-    return(Cell(emptyCellData))
+    return(Cell(emptyCellData, label))
 
 def padRows(rows, maxLength):
     newRows = []

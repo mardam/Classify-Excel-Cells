@@ -1,5 +1,6 @@
 import csv
 import re
+import Strings
 
 def isFloat(elem):
     if re.match("^\d+?\.\d+?$", elem) is None:
@@ -23,7 +24,7 @@ def parseNumberOfNeighbors(data):
             return(i - 26)
     raise("Cell " + data[5] + " has no number of Neighbors")
 
-def parseFeatures(data):
+def parseFeatures(data, kind):
     numberOfNeighbors = parseNumberOfNeighbors(data)
     data = data[6:24] + data[31:49]
     features = []
@@ -31,7 +32,13 @@ def parseFeatures(data):
         numValue = dataelement_to_float(elem)
         if numValue is not None:
             features.append(numValue)
-    features.append(numberOfNeighbors)     
+    features.append(numberOfNeighbors)
+    if kind == Strings.empty_cell:
+        return(features + [1,0,0])  
+    if kind == Strings.start_cell:
+        return(features + [0,1,0])
+    if kind == Strings.end_cell:
+        return(features + [0,0,1])
     return(features + [0,0,0])      # cell_type: empty, start, end
 
 def get_row_number(position):
@@ -55,9 +62,9 @@ def get_cell_position(cells, cell):
     return(len(cells))
 
 class Cell(object):
-    def __init__(self, data):
+    def __init__(self, data, kind):
         self.label = data[49]
-        self.features = parseFeatures(data)
+        self.features = parseFeatures(data, kind)
         self.file = data[0]
         self.sheet_name = data[2]
         self.cell_adress = data[5]
@@ -83,7 +90,7 @@ def parseCsvFile():
         datareader = csv.reader(csvfile, delimiter = ',', quotechar = '\'')
         rows = []
         for dataCell in datareader:
-            cell = Cell(dataCell)
+            cell = Cell(dataCell, None)
             row_position = getRowPosition(rows, cell.row)
             if (row_position is None):
                 rows.append([cell])
