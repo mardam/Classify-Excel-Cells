@@ -53,51 +53,51 @@ class Cell(object):
         self.file = data[0]
         self.sheet_name = data[2]
         self.cell_adress = data[5]
-        self.row_number = get_row_number(self.cell_adress)
-        self.column_number = get_column_number(self.cell_adress)
-        self.sheet = self.file + self.sheet_name
+        self.row_number = int(data[24])#get_row_number(self.cell_adress)
+        self.column_number = int(data[25])#get_column_number(self.cell_adress)
+        self.row = self.file + self.sheet_name + str(self.row_number)
 
-def isFirstSheet(data):
-    return(data[0] == "michelle_lokay__26590__IGSUpdate.xls" and data[2] == "Sheet1")
+    def previousRow():
+        return(self.file + self.sheet_name + str(self.rownumber - 1))
+
+    def nextRow():
+        return(self.file + self.sheet_name + str(self.rownumber + 1))
 
 
-def getSheetPosition(cells, sheet_name):
+def getRowPosition(cells, row_name):
     for i in range(0, len(cells)):
-        if cells[i][0].sheet == sheet_name:
+        if cells[i][0].row == row_name:
             return i
     return None
 
 def parseCsvFile():
     with open('49_features_downsampled_dataset.csv') as csvfile:
         datareader = csv.reader(csvfile, delimiter = ',', quotechar = '\'')
-        sheets = []
-        last_sheet = ""
-        sheet_position = -1
-        for row in datareader:
-            cell = Cell(row)
-            sheet_position = getSheetPosition(sheets, cell.sheet)
-            if (sheet_position is None):
-                sheets.append([cell])
+        rows = []
+        for dataCell in datareader:
+            cell = Cell(dataCell)
+            row_position = getRowPosition(rows, cell.row)
+            if (row_position is None):
+                rows.append([cell])
             else:
-                sheets[sheet_position].insert(get_cell_position(sheets[sheet_position], cell), cell)
+                rows[row_position].insert(get_cell_position(rows[row_position], cell), cell)
     #Testing:
     
-    print(len(sheets))
-    print(len(sheets[0]))
-    print(len(sheets[1]))
+    print("Number of Rows: " + str(len(rows)))
+    print("Length of first row " + str(len(rows[0])))
+    print("Length of second row: " + str(len(rows[1])))
 
 
     outputs = set()
 
-    for sheet in sheets:
+    for row in rows:
         output = set()
-        for cell in sheet:
-            output.add(cell.sheet)
+        for cell in row:
+            output.add(cell.row)
         if len(output) != 1:
+            print("Arrays with cells from more or less than 1 row")
             print(output)
         outputs.add(output.pop())
-    print(len(outputs))
-    #for cell in cells[0]:
-        #print(cell.sheet)
-    return(sheets)
+    print("Number of rows:" + str(len(outputs)))
+    return(rows)
 
