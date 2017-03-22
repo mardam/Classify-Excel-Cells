@@ -17,13 +17,22 @@ def dataelement_to_float(elem):
         return(1)
     return(None)
 
+def parseNumberOfNeighbors(data):
+    for i in range(26,31):
+        if data[i] == "t":
+            return(i - 26)
+    raise("Cell " + data[5] + " has no number of Neighbors")
+
 def parseFeatures(data):
-    ret = []
+    numberOfNeighbors = parseNumberOfNeighbors(data)
+    data = data[6:24] + data[31:49]
+    features = []
     for elem in data:
         numValue = dataelement_to_float(elem)
         if numValue is not None:
-            ret.append(numValue)
-    return(ret)
+            features.append(numValue)
+    features.append(numberOfNeighbors)     
+    return(features + [0,0,0])      # cell_type: empty, start, end
 
 def get_row_number(position):
     try:
@@ -44,7 +53,6 @@ def get_cell_position(cells, cell):
         if (cells[i].row_number > cell.row_number or (cells[i].row_number == cell.row_number and cells[i].column_number > cell.column_number)):
             return(i)
     return(len(cells))
-                
 
 class Cell(object):
     def __init__(self, data):
