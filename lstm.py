@@ -12,7 +12,7 @@ print("Full cell features:" + str(rows[0][0].features) + "; length = " + str(len
 
 paddedRows = padRows(rows, maxLength)
 
-normalizedRows = normalizeData(rows)
+normalizedRows = normalizeData(paddedRows)
 
 #for row in normalizedRows:
 #    for cell in row:
