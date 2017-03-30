@@ -23,8 +23,10 @@ print("Number of features: " + str(number_of_features))
 
 batch_size = len(normalizedRows[0])
 
-dataX = []
-dataY = []
+trainX = []
+trainY = []
+testX = []
+testY = []
 
 def classLabelToNumber(label):
     if label == Strings.start_cell:
@@ -47,21 +49,29 @@ def classLabelToNumber(label):
 
 for row in normalizedRows:
     for cell in row:
-        dataX.append(cell.features)
-        dataY.append(classLabelToNumber(cell.label))
+        if cell.corpus == "ENRON":
+            testX.append(cell.features)
+            testY.append(classLabelToNumber(cell.label))
+        else:
+            trainX.append(cell.features)
+            trainY.append(classLabelToNumber(cell.label))
 
 numpy.random.seed(7)
 
 
-X = numpy.reshape(dataX, (len(dataX), 1, number_of_features))
-y = np_utils.to_categorical(dataY)
+X = numpy.reshape(trainX, (len(trainX), 1, number_of_features))
+y = np_utils.to_categorical(trainY)
 
+tX = numpy.reshape(testX, (len(testX), 1, number_of_features))
+ty = np_utils.to_categorical(testY)
 
 model = Sequential()
 model.add(SimpleRNN(32, input_shape = (X.shape[1], X.shape[2])))
 model.add(Dense(y.shape[1], activation = 'softmax'))
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
-model.fit(X, y, epochs=2, batch_size = batch_size, verbose = 2, shuffle = False)
+model.fit(X, y, epochs=200, batch_size = batch_size, verbose = 2, shuffle = False)
 
-scores = model.evaluate(X, y, verbose = 0)
+
+
+scores = model.evaluate(tX, ty, verbose = 0)
 print("Model Accuracy: %.2f%%" % (scores[1]*100))
