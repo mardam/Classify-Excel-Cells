@@ -67,6 +67,7 @@ class Cell(object):
         self.label = data[49]
         self.features = parseFeatures(data, kind)
         self.file = data[0]
+        self.corpus = data[1]
         self.sheet_name = data[2]
         self.cell_adress = data[5]
         self.row_number = int(data[24])#get_row_number(self.cell_adress)
