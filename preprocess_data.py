@@ -48,16 +48,28 @@ def padRows(rows, maxLength):
         newRows.append(newRow)
     return(newRows)
 
-
 emptyCell = createEmptyCell(emptyCellData, 2,2, Strings.empty_cell, "abc", "def")
 
 print("Empty cell features:" + str(emptyCell.features) + "; length = " + str(len(emptyCell.features)))
 
-rows = parseCsvFile()
-maxLength = getHighestColumnNumber(rows)
-print("Length of longest row" + str(maxLength))
-print("Full cell features:" + str(rows[0][0].features) + "; length = " + str(len(rows[0][0].features)))
+def normalizeData(rows):
+    numberOfFeatures = len(rows[0][0].features)
+    for i in range(0, numberOfFeatures):
+        maximum = -1
+        for row in rows:
+            for cell in row:
+                if cell.features[i] > maximum:
+                    maximum = cell.features[i]
+        if maximum == -1:
+            raise Exception("no maximum found")
+        if maximum == 0:
+            warnings.warn("Maximum == 0, " + str(i))
+        else:
+            for row in rows:
+                for cell in row:
+                    cell.features[i] = cell.features[i] / maximum
+    return(rows)
 
-paddedRows = padRows(rows, maxLength)
+
 
 

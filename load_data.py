@@ -1,6 +1,7 @@
 import csv
 import re
 import Strings
+import warnings
 
 def isFloat(elem):
     if re.match("^\d+?\.\d+?$", elem) is None:
