@@ -17,11 +17,12 @@ def getEmptyCellData():
 emptyCellData = getEmptyCellData()
 print(len(emptyCellData))
 
-def createEmptyCell(emptyCellData, rowNumber, columnNumber, label, file, sheetName):
+def createEmptyCell(emptyCellData, rowNumber, columnNumber, label, file, sheetName, corpus):
     emptyCellData[49] = label
     emptyCellData[24] = rowNumber
     emptyCellData[25] = columnNumber
     emptyCellData[0] = file
+    emptyCellData[1] = corpus
     emptyCellData[2] = sheetName
     emptyCellData[5] = "(" + str(columnNumber) + "," + str(rowNumber) + ")"
     return(Cell(emptyCellData, label))
@@ -32,7 +33,8 @@ def padRows(rows, maxLength):
         rowNumber = row[0].row_number
         sheetName = row[0].sheet_name
         file = row[0].file
-        newRow = [createEmptyCell(emptyCellData, rowNumber, -1, Strings.start_cell, file, sheetName)]
+        corpus = row[0].corpus
+        newRow = [createEmptyCell(emptyCellData, rowNumber, -1, Strings.start_cell, file, sheetName, corpus)]
         oldIndex = 0
         nextCell = row[oldIndex]
         for i in range(0, maxLength + 1):
@@ -42,13 +44,13 @@ def padRows(rows, maxLength):
                 if oldIndex < len(row):
                     nextCell = row[oldIndex]
             else:
-                newRow.append(createEmptyCell(emptyCellData, rowNumber, i, Strings.empty_cell, file, sheetName))
+                newRow.append(createEmptyCell(emptyCellData, rowNumber, i, Strings.empty_cell, file, sheetName, corpus))
                 
-        newRow.append(createEmptyCell(emptyCellData, rowNumber, maxLength + 1, Strings.end_cell, file, sheetName))
+        newRow.append(createEmptyCell(emptyCellData, rowNumber, maxLength + 1, Strings.end_cell, file, sheetName, corpus))
         newRows.append(newRow)
     return(newRows)
 
-emptyCell = createEmptyCell(emptyCellData, 2,2, Strings.empty_cell, "abc", "def")
+emptyCell = createEmptyCell(emptyCellData, 2,2, Strings.empty_cell, "abc", "def", "fgh")
 
 print("Empty cell features:" + str(emptyCell.features) + "; length = " + str(len(emptyCell.features)))
 
