@@ -30,6 +30,8 @@ trainY = []
 testX = []
 testY = []
 
+saveData(normalizedRows)
+
 def classLabelToNumber(label):
     if label == Strings.start_cell:
         return(0)
