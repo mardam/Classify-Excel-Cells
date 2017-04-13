@@ -37,16 +37,19 @@ def padRows(rows, maxLength):
         newRow = [createEmptyCell(emptyCellData, rowNumber, -1, Strings.start_cell, file, sheetName, corpus)]
         oldIndex = 0
         nextCell = row[oldIndex]
-        for i in range(0, maxLength + 1):
+        i = 0
+        while i <= maxLength + 1:
             if nextCell.column_number == i:
                 newRow.append(nextCell)
                 oldIndex = oldIndex + 1
                 if oldIndex < len(row):
                     nextCell = row[oldIndex]
+                else:
+                    i = i + 1
+                    newRow.append(createEmptyCell(emptyCellData, rowNumber, i, Strings.end_cell, file, sheetName, corpus))
             else:
                 newRow.append(createEmptyCell(emptyCellData, rowNumber, i, Strings.empty_cell, file, sheetName, corpus))
-                
-        newRow.append(createEmptyCell(emptyCellData, rowNumber, maxLength + 1, Strings.end_cell, file, sheetName, corpus))
+            i = i + 1
         newRows.append(newRow)
     return(newRows)
 
