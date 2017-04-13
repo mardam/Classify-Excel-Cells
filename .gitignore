@@ -89,3 +89,4 @@ ENV/
 .ropeproject
 
 49_features_downsampled_dataset.csv
+outputs
