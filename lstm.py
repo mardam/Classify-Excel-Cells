@@ -51,6 +51,31 @@ def classLabelToNumber(label):
         return(7)
     raise Exception("Illegal classname: " + label)
 
+def printEvaluation(fileName, model, Xtrain, Ytrain, Xtest, Ytest):
+    file = open("C:/Users/Markus Damm/Programmierung/Classify-Excel-Cells/outputs/" + fileName, "w+")
+    scores = model.evaluate(tX, ty, verbose = 0, batch_size = batch_size)
+    file.write("Model Accuracy: %.2f%%" % (scores[1]*100))
+
+    file.write("Training:\n")
+    ypred = numpy.argmax(model.predict(Xtrain), axis = 1)
+    file.write("----------------------------------\n")
+    file.write("Confusion matrix:\n")
+    file.write(str(confusion_matrix(numpy.argmax(Ytrain, axis = 1), ypred)))
+    file.write("\n\n-----------------------------------\n")
+    file.write("Metics:")
+    file.write(str(classification_report(numpy.argmax(Ytrain, axis = 1), ypred)))
+
+    file.write("Test:")
+    ypred = numpy.argmax(model.predict(Xtest), axis = 1)
+    file.write("----------------------------------\n")
+    file.write("Confusion matrix:\n")
+    file.write(str(confusion_matrix(numpy.argmax(Ytest, axis = 1), ypred)))
+    file.write("\n\n-----------------------------------\n")
+    file.write("Metics:\n")
+    file.write(str(classification_report(numpy.argmax(Ytest, axis = 1), ypred)))
+    file.close()
+    
+
 for row in normalizedRows:
     for cell in row:
         if cell.corpus == "ENRON":
@@ -69,21 +94,25 @@ y = np_utils.to_categorical(trainY)
 tX = numpy.reshape(testX, (len(testX), 1, number_of_features))
 ty = np_utils.to_categorical(testY)
 
-model = Sequential()
-model.add(SimpleRNN(40, input_shape = (X.shape[1], X.shape[2])))
-model.add(Dense(y.shape[1], activation = 'softmax'))
-model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
-model.fit(X, y, epochs=3, batch_size = batch_size, verbose = 2, shuffle = False)
+epochNumbers = [300, 400, 500]
+for number in epochNumbers:
+    print("##############################################")
+    print("Number of epochs: " + str(number))
+    model = Sequential()
+    model.add(LSTM(40, input_shape = (X.shape[1], X.shape[2])))
+    model.add(Dense(y.shape[1], activation = 'softmax'))
+    model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
+    model.fit(X, y, epochs=number, batch_size = batch_size, verbose = 2, shuffle = False)
+    printEvaluation("LSTM_" + str(number) + ".txt", model, X, y, tX, ty)
 
+epochNumbers = [1000]
+for number in epochNumbers:
+    print("##############################################")
+    print("Number of epochs: " + str(number))
+    model = Sequential()
+    model.add(SimpleRNN(40, input_shape = (X.shape[1], X.shape[2])))
+    model.add(Dense(y.shape[1], activation = 'softmax'))
+    model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
+    model.fit(X, y, epochs=number, batch_size = batch_size, verbose = 2, shuffle = False)
+    printEvaluation("RNN_" + str(number) + ".txt", model, X, y, tX, ty)
 
-
-scores = model.evaluate(tX, ty, verbose = 0, batch_size = batch_size)
-print("Model Accuracy: %.2f%%" % (scores[1]*100))
-
-ypred = numpy.argmax(model.predict(tX), axis = 1)
-print("----------------------------------")
-print("Confusion matrix:")
-print(confusion_matrix(numpy.argmax(ty, axis = 1), ypred))
-print("\n\n-----------------------------------")
-print("Metics:")
-print(classification_report(numpy.argmax(ty, axis = 1), ypred))
