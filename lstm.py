@@ -117,25 +117,25 @@ y = np_utils.to_categorical(trainY)
 tX = numpy.reshape(testX, (len(testX), 1, number_of_features))
 ty = np_utils.to_categorical(testY)
 
-epochNumbers = [300, 400, 500]
+epochNumbers = [1, 3, 5, 10, 20, 50, 100, 200, 300, 400, 500]
 for number in epochNumbers:
     print("##############################################")
     print("Number of epochs: " + str(number))
     model = Sequential()
-    model.add(LSTM(40, input_shape = (X.shape[1], X.shape[2])))
+    model.add(RNN(100, input_shape = (X.shape[1], X.shape[2])))
+    model.add(Dense(y.shape[1], activation = 'softmax'))
+    model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
+    model.fit(X, y, epochs=number, batch_size = batch_size, verbose = 2, shuffle = False)
+    printEvaluation("RNN_" + str(number) + ".txt", model, X, y, tX, ty)
+
+for number in epochNumbers:
+    print("##############################################")
+    print("Number of epochs: " + str(number))
+    model = Sequential()
+    model.add(LSTM(100, input_shape = (X.shape[1], X.shape[2])))
     model.add(Dense(y.shape[1], activation = 'softmax'))
     model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
     model.fit(X, y, epochs=number, batch_size = batch_size, verbose = 2, shuffle = False)
     printEvaluation("LSTM_" + str(number) + ".txt", model, X, y, tX, ty)
 
-epochNumbers = [1000]
-for number in epochNumbers:
-    print("##############################################")
-    print("Number of epochs: " + str(number))
-    model = Sequential()
-    model.add(SimpleRNN(40, input_shape = (X.shape[1], X.shape[2])))
-    model.add(Dense(y.shape[1], activation = 'softmax'))
-    model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
-    model.fit(X, y, epochs=number, batch_size = batch_size, verbose = 2, shuffle = False)
-    printEvaluation("RNN_" + str(number) + ".txt", model, X, y, tX, ty)
 
