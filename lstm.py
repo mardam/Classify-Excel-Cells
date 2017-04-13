@@ -6,6 +6,7 @@ from keras.layers import LSTM
 from keras.utils import np_utils
 from preprocess_data import *
 from sklearn.metrics import confusion_matrix, classification_report
+import random
 
 rows = parseCsvFile()
 maxLength = getHighestColumnNumber(rows)
@@ -51,9 +52,32 @@ def classLabelToNumber(label):
         return(7)
     raise Exception("Illegal classname: " + label)
 
+euses_files = set()
+enron_files = set()
+fuse_files = set()
+
+for row in normalizedRows:
+    first_cell = row[0]
+    if first_cell.corpus == "ENRON":
+        enron_files.add(first_cell.file)
+    elif first_cell.corpus == "FUSE":
+        fuse_files.add(first_cell.file)
+    elif first_cell.corpus == "EUSES":
+        euses_files.add(first_cell.file)
+    elif True:
+        raise(Exception("Unknown corpus: " + first_cell.file))
+
+print("Number of Enron Files: " + str(len(enron_files)))
+print("Number of Fuse Files: " + str(len(fuse_files)))
+print("Number of Euses Files: " + str(len(euses_files)))
+
+test_set = set(random.sample(enron_files, round(len(enron_files) / 3))).union(set(random.sample(fuse_files, round(len(fuse_files) / 3)))).union(set(random.sample(euses_files, round(len(euses_files) / 3))))
+
+print("Length of Test set: " + str(len(test_set)))
+
 for row in normalizedRows:
     for cell in row:
-        if cell.corpus == "ENRON":
+        if cell.file in test_set:
             testX.append(cell.features)
             testY.append(classLabelToNumber(cell.label))
         else:
