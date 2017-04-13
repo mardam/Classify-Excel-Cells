@@ -122,7 +122,7 @@ for number in epochNumbers:
     print("##############################################")
     print("Number of epochs: " + str(number))
     model = Sequential()
-    model.add(RNN(100, input_shape = (X.shape[1], X.shape[2])))
+    model.add(SimpleRNN(100, input_shape = (X.shape[1], X.shape[2])))
     model.add(Dense(y.shape[1], activation = 'softmax'))
     model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
     model.fit(X, y, epochs=number, batch_size = batch_size, verbose = 2, shuffle = False)
