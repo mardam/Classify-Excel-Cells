@@ -1,12 +1,11 @@
-import numpy
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import SimpleRNN
 from keras.layers import LSTM
 from keras.utils import np_utils
 from preprocess_data import *
-from sklearn.metrics import confusion_matrix, classification_report
 import random
+from print_results import *
 
 rows = parseCsvFile()
 maxLength = getHighestColumnNumber(rows)
@@ -71,6 +70,8 @@ print("Number of Enron Files: " + str(len(enron_files)))
 print("Number of Fuse Files: " + str(len(fuse_files)))
 print("Number of Euses Files: " + str(len(euses_files)))
 
+random.seed(5)
+
 test_set = set(random.sample(enron_files, round(len(enron_files) / 3))).union(set(random.sample(fuse_files, round(len(fuse_files) / 3)))).union(set(random.sample(euses_files, round(len(euses_files) / 3))))
 
 print("Length of Test set: " + str(len(test_set)))
@@ -97,17 +98,7 @@ model = Sequential()
 model.add(SimpleRNN(40, input_shape = (X.shape[1], X.shape[2])))
 model.add(Dense(y.shape[1], activation = 'softmax'))
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
-model.fit(X, y, epochs=3, batch_size = batch_size, verbose = 2, shuffle = False)
+model.fit(X, y, epochs=1, batch_size = batch_size, verbose = 2, shuffle = False)
 
+printEvaluation("test.txt", model, X, y, tX, ty, batch_size)
 
-
-scores = model.evaluate(tX, ty, verbose = 0, batch_size = batch_size)
-print("Model Accuracy: %.2f%%" % (scores[1]*100))
-
-ypred = numpy.argmax(model.predict(tX), axis = 1)
-print("----------------------------------")
-print("Confusion matrix:")
-print(confusion_matrix(numpy.argmax(ty, axis = 1), ypred))
-print("\n\n-----------------------------------")
-print("Metics:")
-print(classification_report(numpy.argmax(ty, axis = 1), ypred))
