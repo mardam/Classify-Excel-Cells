@@ -3,6 +3,7 @@ from keras.layers import Dense
 from keras.layers import SimpleRNN
 from keras.layers import LSTM
 from keras.utils import np_utils
+from keras.layers import Dropout
 from preprocess_data import *
 import random
 from print_results import *
@@ -94,11 +95,16 @@ y = np_utils.to_categorical(trainY)
 tX = numpy.reshape(testX, (len(testX), 1, number_of_features))
 ty = np_utils.to_categorical(testY)
 
-model = Sequential()
-model.add(SimpleRNN(40, input_shape = (X.shape[1], X.shape[2])))
-model.add(Dense(y.shape[1], activation = 'softmax'))
-model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
-model.fit(X, y, epochs=1, batch_size = batch_size, verbose = 2, shuffle = False)
 
-printEvaluation("test.txt", model, X, y, tX, ty, batch_size)
+
+epoch_numbers = [1,3,5,10,20,30,50,100,200,300,400,500]
+for epoch_number in epoch_numbers:
+    model = Sequential()
+    model.add(SimpleRNN(40, input_shape = (X.shape[1], X.shape[2])))
+    model.add(Dropout(0.2))
+    model.add(Dense(y.shape[1], activation = 'softmax'))
+    model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
+    model.fit(X, y, epochs=epoch_number, batch_size = batch_size, verbose = 2, shuffle = False)
+
+    printEvaluation("LSTM_Dropout" + str(epoch_number + ".txt", model, X, y, tX, ty, batch_size)    
 
