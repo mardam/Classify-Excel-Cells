@@ -73,12 +73,12 @@ class Cell(object):
         self.row_number = int(data[24])#get_row_number(self.cell_adress)
         self.column_number = int(data[25])#get_column_number(self.cell_adress)
         self.row = self.file + self.sheet_name + str(self.row_number)
+        
+    def hasImportantClass(self):
+        return(self.label in Strings.importantClasses)
 
-    def previousRow():
-        return(self.file + self.sheet_name + str(self.rownumber - 1))
-
-    def nextRow():
-        return(self.file + self.sheet_name + str(self.rownumber + 1))
+    def setNeighbors(self, neighbors):
+        self.features[len(self.features) - 4] = neighbors
 
 
 def getRowPosition(cells, row_name):

@@ -6,3 +6,6 @@ data = "data"
 header = "header"
 metadata = "metadata"
 derived = "derived"
+
+
+importantClasses = [attributes, data, header, metadata, derived]

@@ -1,5 +1,6 @@
 from load_data import *
 
+
 def getHighestColumnNumber(rows):
     maxIndex = -1
     for row in rows:
@@ -17,7 +18,7 @@ def getEmptyCellData():
 emptyCellData = getEmptyCellData()
 print(len(emptyCellData))
 
-def createEmptyCell(emptyCellData, rowNumber, columnNumber, label, file, sheetName, corpus):
+def createEmptyCell(emptyCellData, rowNumber, columnNumber, neighbors, label, file, sheetName, corpus):
     emptyCellData[49] = label
     emptyCellData[24] = rowNumber
     emptyCellData[25] = columnNumber
@@ -25,16 +26,64 @@ def createEmptyCell(emptyCellData, rowNumber, columnNumber, label, file, sheetNa
     emptyCellData[1] = corpus
     emptyCellData[2] = sheetName
     emptyCellData[5] = "(" + str(columnNumber) + "," + str(rowNumber) + ")"
-    return(Cell(emptyCellData, label))
+    cell = Cell(emptyCellData, label)
+    cell.setNeighbors(neighbors)
+    return(cell)
+
+
+def checkCellNeighborsRow(row, columnNumber):
+    for cell in row:
+        if cell.column_number == columnNumber:
+            if cell.hasImportantClass:
+                return(1)
+            else:
+                return(0)
+        if cell.column_number > columnNumber:
+            return(0)
+    return(0)
+
+def checkCellNeighborsCurrentRow(row, columnNumber):
+    ret = 0
+    for cell in row:
+        if cell.column_number == columnNumber - 1:
+            if cell.hasImportantClass:
+                ret = 1
+        if cell.column_number == columnNumber + 1:
+            if cell.hasImportantClass:
+                return(ret + 1)
+            else:
+                return(ret)
+        if cell.column_number > columnNumber:
+            return(ret)
+    return(ret)
+            
+            
+
+def collectNumberOfNeighbors(previousRow, currentRow, nextRow, columnNumber):
+    return(checkCellNeighborsRow(previousRow, columnNumber) + checkCellNeighborsRow(nextRow, columnNumber) + checkCellNeighborsCurrentRow(currentRow, columnNumber))
+        
 
 def padRows(rows, maxLength):
     newRows = []
-    for row in rows:
+    oldSheetName = ""
+    for j in range(0, len(rows)):
+    #for row in rows:
+        row = rows[j]
         rowNumber = row[0].row_number
         sheetName = row[0].sheet_name
+        if oldSheetName == sheetName:
+            previousRow = rows[j-1]
+        else:
+            previousRow = []
+        nextRow = []
+        if (j + 1) < len(rows):
+            if rows[j+1][0].sheet_name == sheetName:
+                nextRow = rows[j+1]
+        oldSheetName = sheetName
         file = row[0].file
         corpus = row[0].corpus
-        newRow = [createEmptyCell(emptyCellData, rowNumber, -1, Strings.start_cell, file, sheetName, corpus)]
+        neighbors = collectNumberOfNeighbors(previousRow, row, nextRow, -1)
+        newRow = [createEmptyCell(emptyCellData, rowNumber, -1, neighbors, Strings.start_cell, file, sheetName, corpus)]
         oldIndex = 0
         nextCell = row[oldIndex]
         i = 0
@@ -46,14 +95,16 @@ def padRows(rows, maxLength):
                     nextCell = row[oldIndex]
                 else:
                     i = i + 1
-                    newRow.append(createEmptyCell(emptyCellData, rowNumber, i, Strings.end_cell, file, sheetName, corpus))
+                    neighbors = collectNumberOfNeighbors(previousRow, row, nextRow, -1)
+                    newRow.append(createEmptyCell(emptyCellData, rowNumber, i, neighbors, Strings.end_cell, file, sheetName, corpus))
             else:
-                newRow.append(createEmptyCell(emptyCellData, rowNumber, i, Strings.empty_cell, file, sheetName, corpus))
+                neighbors = collectNumberOfNeighbors(previousRow, row, nextRow, i)
+                newRow.append(createEmptyCell(emptyCellData, rowNumber, i, neighbors, Strings.empty_cell, file, sheetName, corpus))
             i = i + 1
         newRows.append(newRow)
     return(newRows)
 
-emptyCell = createEmptyCell(emptyCellData, 2,2, Strings.empty_cell, "abc", "def", "fgh")
+emptyCell = createEmptyCell(emptyCellData, 2,2, 4, Strings.empty_cell, "abc", "def", "fgh")
 
 print("Empty cell features:" + str(emptyCell.features) + "; length = " + str(len(emptyCell.features)))
 
