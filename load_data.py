@@ -26,14 +26,14 @@ def parseNumberOfNeighbors(data):
     raise("Cell " + data[5] + " has no number of Neighbors")
 
 def parseFeatures(data, kind):
-    numberOfNeighbors = parseNumberOfNeighbors(data)
-    data = data[6:24] + data[31:49]
+    #numberOfNeighbors = parseNumberOfNeighbors(data)
+    data = data[6:39] + data[42:151]
     features = []
     for elem in data:
         numValue = dataelement_to_float(elem)
         if numValue is not None:
             features.append(numValue)
-    features.append(numberOfNeighbors)
+    #features.append(numberOfNeighbors)
     if kind == Strings.empty_cell:
         return(features + [1,0,0])  
     if kind == Strings.start_cell:
@@ -64,14 +64,14 @@ def get_cell_position(cells, cell):
 
 class Cell(object):
     def __init__(self, data, kind):
-        self.label = data[49]
+        self.label = data[151]
         self.features = parseFeatures(data, kind)
         self.file = data[0]
         self.corpus = data[1]
         self.sheet_name = data[2]
         self.cell_adress = data[5]
-        self.row_number = int(data[24])#get_row_number(self.cell_adress)
-        self.column_number = int(data[25])#get_column_number(self.cell_adress)
+        self.row_number = int(data[38])#get_row_number(self.cell_adress)
+        self.column_number = int(data[39])#get_column_number(self.cell_adress)
         self.row = self.file + self.sheet_name + str(self.row_number)
         
     def hasImportantClass(self):
@@ -88,7 +88,7 @@ def getRowPosition(cells, row_name):
     return None
 
 def parseCsvFile():
-    with open('49_features_downsampled_dataset.csv') as csvfile:
+    with open('all_features_downsampled_dataset_binarized_remove_useless.csv') as csvfile:
         datareader = csv.reader(csvfile, delimiter = ',', quotechar = '\'')
         rows = []
         for dataCell in datareader:
