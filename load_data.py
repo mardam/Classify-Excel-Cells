@@ -2,6 +2,7 @@ import csv
 import re
 import Strings
 import warnings
+import config
 
 def isFloat(elem):
     if re.match("^\d+?\.\d+?$", elem) is None:
@@ -27,7 +28,7 @@ def parseNumberOfNeighbors(data):
 
 def parseFeatures(data, kind):
     #numberOfNeighbors = parseNumberOfNeighbors(data)
-    data = data[6:39] + data[42:151]
+    data = data[6:config.row_number_position] + data[config.after_coordinates_position:151]
     features = []
     for elem in data:
         numValue = dataelement_to_float(elem)
@@ -64,14 +65,14 @@ def get_cell_position(cells, cell):
 
 class Cell(object):
     def __init__(self, data, kind):
-        self.label = data[151]
+        self.label = data[config.label_position]
         self.features = parseFeatures(data, kind)
-        self.file = data[0]
-        self.corpus = data[1]
-        self.sheet_name = data[2]
-        self.cell_adress = data[5]
-        self.row_number = int(data[38])#get_row_number(self.cell_adress)
-        self.column_number = int(data[39])#get_column_number(self.cell_adress)
+        self.file = data[config.file_name_position]
+        self.corpus = data[config.corpus_name_position]
+        self.sheet_name = data[config.sheet_name_position]
+        self.cell_adress = data[config.cell_adress_position]
+        self.row_number = int(data[config.row_number_position])#get_row_number(self.cell_adress)
+        self.column_number = int(data[config.column_number_position])#get_column_number(self.cell_adress)
         self.row = self.file + self.sheet_name + str(self.row_number)
         
     def hasImportantClass(self):

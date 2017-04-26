@@ -11,7 +11,7 @@ def getHighestColumnNumber(rows):
             
 
 def getEmptyCellData():
-    with open("empty_cell.csv") as csvfile:
+    with open("empty_cell_full_features.csv") as csvfile:
         datareader = csv.reader(csvfile, delimiter = ',', quotechar = '\'')
         return(next(datareader))
 
@@ -19,15 +19,15 @@ emptyCellData = getEmptyCellData()
 print(len(emptyCellData))
 
 def createEmptyCell(emptyCellData, rowNumber, columnNumber, neighbors, label, file, sheetName, corpus):
-    emptyCellData[49] = label
-    emptyCellData[24] = rowNumber
-    emptyCellData[25] = columnNumber
-    emptyCellData[0] = file
-    emptyCellData[1] = corpus
-    emptyCellData[2] = sheetName
-    emptyCellData[5] = "(" + str(columnNumber) + "," + str(rowNumber) + ")"
+    emptyCellData[config.label_position] = label
+    emptyCellData[config.row_number_position] = rowNumber
+    emptyCellData[config.column_number_position] = columnNumber
+    emptyCellData[config.file_name_position] = file
+    emptyCellData[config.corpus_name_position] = corpus
+    emptyCellData[config.sheet_name_position] = sheetName
+    emptyCellData[config.cell_adress_position] = "(" + str(columnNumber) + "," + str(rowNumber) + ")"
     cell = Cell(emptyCellData, label)
-    cell.setNeighbors(neighbors)
+    #cell.setNeighbors(neighbors)
     return(cell)
 
 
@@ -104,7 +104,7 @@ def padRows(rows, maxLength):
         newRows.append(newRow)
     return(newRows)
 
-emptyCell = createEmptyCell(emptyCellData, 2,2, 4, Strings.empty_cell, "abc", "def", "fgh")
+emptyCell = createEmptyCell(emptyCellData, 156, 157, 158, Strings.empty_cell, "abc", "def", "fgh")
 
 print("Empty cell features:" + str(emptyCell.features) + "; length = " + str(len(emptyCell.features)))
 
