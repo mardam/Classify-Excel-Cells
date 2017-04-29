@@ -9,7 +9,7 @@ import random
 from print_results import *
 from itertools import compress
 from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.feature_selection import SelectFromModel
+from sklearn.feature_selection import SelectFromModel, SelectKBest, chi2
 
 rows = parseCsvFile()
 maxLength = getHighestColumnNumber(rows)
@@ -83,27 +83,25 @@ for row in normalizedRows:
 numpy.random.seed(7)
 
 
-clf = ExtraTreesClassifier()
-clf = clf.fit(X, Y)
+test = SelectKBest(score_func = chi2, k = 40)
+fit = test.fit(X,Y)
 
-model = SelectFromModel(clf, prefit = True)
-X = model.transform(X)
-
-printFeatureWeights(clf.feature_importances_, model.get_support(), "features_selection_tree_based.txt")
+printFeatureWeights(fit.scores_, fit.transform([range(0,number_of_features)]), "features_selection_chi2.txt")
 
 print("feature selected")
 
 for row in normalizedRows:
     for cell in row:
-        cell.features = numpy.array(cell.features)[numpy.array(model.get_support())]
+        cell.features = fit.transform([cell.features])[0]
+        #cell.features = numpy.array(cell.features)[numpy.array(model.get_support())]
         #list(compress(cell.features, model.get_support()))
 
 print("features filtered")
 
 number_of_features = len(normalizedRows[0][0].features)
 
-seeds = [7,15,37]
-epoch_numbers = [10,20,30,50,100]
+seeds = [15,37,47, 7]
+epoch_numbers = [10,20,30,50,100,200]
 for seed in seeds:
     numpy.random.seed(seed)
 
@@ -130,6 +128,11 @@ for seed in seeds:
 
     tX = numpy.reshape(testX, (len(testX), 1, number_of_features))
     ty = np_utils.to_categorical(testY)
+
+
+    #X = fit.transform(X)
+    #tX = fit.transform(tX)
+    
     for epoch_number in epoch_numbers:
         model = Sequential()
         model.add(LSTM(100, input_shape = (X.shape[1], X.shape[2])))
@@ -138,5 +141,5 @@ for seed in seeds:
         model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
         model.fit(X, y, epochs=epoch_number, batch_size = batch_size, verbose = 2, shuffle = False)
 
-        printEvaluation("LSTM_Dropout_tree_selection_epochs" + str(epoch_number) + "_seed" + str(seed) + ".txt", model, X, y, tX, ty, batch_size)    
+        printEvaluation("LSTM_Dropout_chisquared_epochs" + str(epoch_number) + "_seed" + str(seed) + ".txt", model, X, y, tX, ty, batch_size)    
 
