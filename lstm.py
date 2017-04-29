@@ -95,10 +95,13 @@ print("feature selected")
 
 for row in normalizedRows:
     for cell in row:
-        cell.features = list(compress(cell.features, model.get_support()))
+        cell.features = numpy.array(cell.features)[numpy.array(model.get_support())]
+        #list(compress(cell.features, model.get_support()))
 
 print("features filtered")
-        
+
+number_of_features = len(normalizedRows[0][0].features)
+
 seeds = [7,15,37]
 epoch_numbers = [10,20,30,50,100]
 for seed in seeds:

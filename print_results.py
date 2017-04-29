@@ -2,7 +2,7 @@ from sklearn.metrics import confusion_matrix, classification_report, precision_r
 import numpy
 
 def calculateWeightedMeasure(measures, supports):
-        if len(measures) != len(supports):
+	if len(measures) != len(supports):
 		raise(Exception("blub"))
 	ret = 0
 	sum = 0
@@ -52,9 +52,9 @@ def printEvaluation(fileName, model, Xtrain, Ytrain, Xtest, Ytest, batch_size):
 def printFeatureWeights(featureWeights, support, file_name):
     file = open("outputs/" + file_name, "w+")
     file.write("Feature Weights: \n")
-    file.write(featureWeights)
+    file.write(str(featureWeights))
     file.write("\n\n\nSupport: \n\n")
-    file.write(support)
+    file.write(str(support))
     file.close()
     
 
