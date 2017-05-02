@@ -82,28 +82,10 @@ for row in normalizedRows:
 
 numpy.random.seed(7)
 
-
-clf = ExtraTreesClassifier()
-clf = clf.fit(X, Y)
-
-model = SelectFromModel(clf, prefit = True)
-X = model.transform(X)
-
-printFeatureWeights(clf.feature_importances_, model.get_support(), "features_selection_tree_based.txt")
-
-print("feature selected")
-
-for row in normalizedRows:
-    for cell in row:
-        cell.features = numpy.array(cell.features)[numpy.array(model.get_support())]
-        #list(compress(cell.features, model.get_support()))
-
-print("features filtered")
-
 number_of_features = len(normalizedRows[0][0].features)
 
 seeds = [7,15,37]
-epoch_numbers = [10,20,30,50,100]
+epoch_numbers = [10,20,30,50,100, 200]
 for seed in seeds:
     numpy.random.seed(seed)
 
@@ -138,5 +120,5 @@ for seed in seeds:
         model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
         model.fit(X, y, epochs=epoch_number, batch_size = batch_size, verbose = 2, shuffle = False)
 
-        printEvaluation("LSTM_Dropout_tree_selection_epochs" + str(epoch_number) + "_seed" + str(seed) + ".txt", model, X, y, tX, ty, batch_size)    
+        printEvaluation("LSTM_Dropout_all_epochs" + str(epoch_number) + "_seed" + str(seed) + ".txt", model, X, y, tX, ty, batch_size)    
 
