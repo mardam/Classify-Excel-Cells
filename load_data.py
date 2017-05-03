@@ -36,12 +36,15 @@ def parseFeatures(data, kind):
             features.append(numValue)
     #features.append(numberOfNeighbors)
     if kind == Strings.empty_cell:
-        return(features + [1,0,0])  
+        features = features + [1,0,0]  
     if kind == Strings.start_cell:
-        return(features + [0,1,0])
+        features = features + [0,1,0]
     if kind == Strings.end_cell:
-        return(features + [0,0,1])
-    return(features + [0,0,0])      # cell_type: empty, start, end
+        features = features + [0,0,1]
+    if not kind in [Strings.empty_cell, Strings.start_cell, Strings.end_cell]:
+        features = features + [0,0,0]
+    feature_filter = [0, 5, 6, 10, 32, 33, 35, 37, 39, 44, 53, 77, 130, 132, 133, 141, 142]
+    return([features[i] for i in feature_filter])
 
 def get_row_number(position):
     try:

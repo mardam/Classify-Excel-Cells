@@ -120,5 +120,5 @@ for seed in seeds:
         model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy'])
         model.fit(X, y, epochs=epoch_number, batch_size = batch_size, verbose = 2, shuffle = False)
 
-        printEvaluation("LSTM_Dropout_all_epochs" + str(epoch_number) + "_seed" + str(seed) + ".txt", model, X, y, tX, ty, batch_size)    
+        printEvaluation("LSTM_Dropout_consistency" + str(epoch_number) + "_seed" + str(seed) + ".txt", model, X, y, tX, ty, batch_size)    
 
